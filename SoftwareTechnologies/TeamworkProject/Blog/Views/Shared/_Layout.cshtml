@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Blog - @ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row content">
+            <div class="col-sm-3 sidenav">
+                <h4>SoftUni Blog</h4>
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active">@Html.ActionLink("Home", "Recent", "Article", new { area = "" })</li>
+                    <li>@Html.ActionLink("New Post", "Create", "Article", new { area = "" })</li>
+                    <li>@Html.ActionLink("My Posts", "MyPosts", "Article", new { area = "" })</li>
+                </ul><br>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Blog..">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            @Html.Partial("_LoginPartial")
+            <div class="col-sm-9">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <footer class="container-fluid">
+        <p>&copy; @DateTime.Now.Year - SoftUni Blog</p>
+    </footer>
+</body>
+</html>
