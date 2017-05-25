@@ -1,0 +1,28 @@
+﻿@model List<Blog.Models.Article>
+@{
+    ViewBag.Title = "My Posts";
+}
+
+<div class="col-sm-9" style="padding-left: 30px">
+    <h4><small>MY POSTS</small></h4>
+    <hr>
+    @foreach (var article in Model)
+    {
+        <h2>@Html.ActionLink(@article.Title, "Details", "Article", new { @id = article.Id }, null)</h2>
+        <h5><span class="glyphicon glyphicon-time"></span> Post by @article.Author.UserName, @string.Format("{0:MMM d, yyyy}", article.CreatedDate).</h5>
+
+        var count = 0;
+        <h5>
+            @foreach (var tag in article.Tags.Split(',').ToList())
+            {
+                var color = (count++ % 2 == 0) ? "danger" : "primary";
+                <span class="label label-@color">@tag</span>
+            }
+        </h5><br />
+        <p>
+            @article.Content
+        </p>
+        <hr>
+    }
+</div>
+

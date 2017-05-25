@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blog.Models
 {
@@ -17,10 +16,21 @@ namespace Blog.Models
         [Required]
         public string Content { get; set; }
 
+        [Required]
+        public string Tags { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public List<string> Comments { get; set; }
-
+        [ForeignKey("Author")]
         public string AuthorId { get; set; }
+
+        public virtual ApplicationUser Author { get; set; }
+
+        public string CommentIds { get; set; }
+
+        public bool IsAuthor(string name)
+        {
+            return this.Author.UserName.Equals(name);
+        }
     }
 }

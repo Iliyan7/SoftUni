@@ -49,9 +49,8 @@ namespace Blog.Models
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Username")]
+        public string Username { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -64,6 +63,11 @@ namespace Blog.Models
 
     public class RegisterViewModel
     {
+        [Required]
+        [RegularExpression("^[A-Za-z0-9_]+$", ErrorMessage = "The Username field can contain only A-Z, 0-9 and _.")]
+        [Display(Name = "Username")]
+        public string Username { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

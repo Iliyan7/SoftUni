@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Blog - @ViewBag.Title</title>
@@ -13,29 +15,84 @@
             <div class="col-sm-3 sidenav">
                 <h4>SoftUni Blog</h4>
                 <ul class="nav nav-pills nav-stacked">
-                    <li class="active">@Html.ActionLink("Home", "Recent", "Article", new { area = "" })</li>
-                    <li>@Html.ActionLink("New Post", "Create", "Article", new { area = "" })</li>
-                    <li>@Html.ActionLink("My Posts", "MyPosts", "Article", new { area = "" })</li>
+                
+                    @if (HttpContext.Current.Request.Url.PathAndQuery == "/Article/Home")
+                    {
+                        <li class="active">@Html.ActionLink("Home", "Home", "Article")</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Home", "Home", "Article")</li>
+                    }
+
+                    @if (Request.IsAuthenticated)
+                    {
+                        if (HttpContext.Current.Request.Url.PathAndQuery == "/Article/Create")
+                        {
+                            <li class="active">@Html.ActionLink("New Post", "Create", "Article")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("New Post", "Create", "Article")</li>
+                        }
+
+                        if (HttpContext.Current.Request.Url.PathAndQuery == "/Article/MyPosts")
+                        {
+                            <li class="active">@Html.ActionLink("My Posts", "MyPosts", "Article")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("My Posts", "MyPosts", "Article")</li>
+                        }
+
+                        using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                        }
+                    }
+                    else
+                    {
+                        if (HttpContext.Current.Request.Url.PathAndQuery == "/Account/Register")
+                        {
+                            <li class="active">@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                        }
+
+                        if (HttpContext.Current.Request.Url.PathAndQuery == "/Account/Login")
+                        {
+                            <li class="active">@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+                        }
+                    }
                 </ul><br>
+                @using (Html.BeginForm("Search", "Article", FormMethod.Get))
+                {
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Blog..">
+                    <input type="text" class="form-control" name="search" placeholder="Search Blog..">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">
+                        <button type="submit" class="btn btn-default">
                             <span class="glyphicon glyphicon-search"></span>
                         </button>
                     </span>
                 </div>
-            </div>
-
-            @Html.Partial("_LoginPartial")
-            <div class="col-sm-9">
-                @RenderBody()
-            </div>
+                }
+            </div> 
+            
+            @RenderBody()
         </div>
     </div>
 
     <footer class="container-fluid">
         <p>&copy; @DateTime.Now.Year - SoftUni Blog</p>
     </footer>
+
+    @RenderSection("scripts", required: false)
 </body>
 </html>
