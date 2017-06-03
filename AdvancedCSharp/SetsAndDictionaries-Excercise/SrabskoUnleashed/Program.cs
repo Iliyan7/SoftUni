@@ -28,6 +28,12 @@ namespace SrabskoUnleashed
 
                 var singer = firstTokens[0];
 
+                if(secondTokens.Length < 2)
+                {
+                    input = Console.ReadLine();
+                    continue;
+                }
+
                 var ticketsPrice = 0;
                 var isPriceValid = int.TryParse(secondTokens[secondTokens.Length - 2], out ticketsPrice);
 
