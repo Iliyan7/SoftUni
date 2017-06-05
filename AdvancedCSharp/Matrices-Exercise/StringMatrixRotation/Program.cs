@@ -7,7 +7,7 @@ namespace StringMatrixRotation
     {
         public static void Main()
         {
-
+            var input = Console.ReadLine();
         }
     }
 }
