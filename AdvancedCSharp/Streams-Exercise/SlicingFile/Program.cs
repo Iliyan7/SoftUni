@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SlicingFile
@@ -8,40 +9,73 @@ namespace SlicingFile
         public static void Main()
         {
             Console.Write("Choose file path: ");
-            var file = Console.ReadLine();
+            var filePath = Console.ReadLine()
+                .Trim('"');
 
             Console.Write("Choose number of parts to slice the file: ");
             var parts = int.Parse(Console.ReadLine());
 
-            var fileExtension = file.Substring(file.LastIndexOf('.'));
+            var ext = Path.GetExtension(filePath);
 
-            var dirOutput = file.Substring(0, file.Length - fileExtension.Length);
+            var dir = Path.GetDirectoryName(filePath);
+            dir += Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(filePath);
 
-            Directory.CreateDirectory(dirOutput);
+            Directory.CreateDirectory(dir);
 
-            Slice(file, dirOutput, parts);
+            var fileList = SliceFilesIntoParts(filePath, dir, ext, parts);
+
+            AssembleFileFromParts(fileList, dir, ext);
         }
 
-        private static void Slice(string sourceFile, string destinationDirectory, int parts)
+        private static List<string> SliceFilesIntoParts(string filePath, string destinationDirectory, string ext, int parts)
         {
-            using (var inputFile = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+            var fileList = new List<string>();
+
+            using (var inputStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                var index = 1;
-                var partSize = (int)(inputFile.Length / parts);
+                var index = 0;
+                var partSize = (int)(inputStream.Length / parts);
 
-                while (index <= parts)
+                while (index < parts)
                 {
-                    var destFile = string.Format("{0}/Part-{1}{2}", destinationDirectory, index, sourceFile.Substring(sourceFile.LastIndexOf('.')));
+                    var outputFile = string.Format("{0}{1}Part-{2}{3}", destinationDirectory, Path.DirectorySeparatorChar, index, ext);
+                    fileList.Add(outputFile);
 
-                    using (var outputFile = new FileStream(destFile, FileMode.Create, FileAccess.Write))
+                    using (var outputStream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                     {
                         var buffer = new byte[partSize];
-                        var readBytes = inputFile.Read(buffer, 0, partSize);
+                        var readBytes = inputStream.Read(buffer, 0, partSize);
 
-                        outputFile.Write(buffer, 0, readBytes);
+                        outputStream.Write(buffer, 0, readBytes);
                     }
 
                     index++;
+                }
+            }
+
+            return fileList;
+        }
+
+        private static void AssembleFileFromParts(List<string> fileList, string destinationDirectory, string ext)
+        {
+            var outputFile = string.Format("{0}{1}assebmled{2}", destinationDirectory, Path.DirectorySeparatorChar, ext);
+
+            using (var outputStream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
+            {
+                foreach (var filePath in fileList)
+                {
+                    using (var inputFile = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+
+                        while (true)
+                        {
+                            var buffer = new byte[4096];
+                            var readBytes = inputFile.Read(buffer, 0, buffer.Length);
+
+                            if (readBytes == 0)
+                                break;
+
+                            outputStream.Write(buffer, 0, readBytes);
+                        }
                 }
             }
         }
