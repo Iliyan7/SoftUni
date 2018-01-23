@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightGame", "KnightGame\KnightGame.csproj", "{D96056A7-4456-4BB0-B03F-6ABEEB8DAE31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Regeh", "Regeh\Regeh.csproj", "{0FEB2F3C-353C-427F-8C11-CA84A7EA5ECE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberWars", "NumberWars\NumberWars.csproj", "{3C0AB2A9-61BB-4E3C-92AE-BBC8A48C4A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hospital", "Hospital\Hospital.csproj", "{AAE81FAF-5960-496E-BF54-7F467B21028A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D96056A7-4456-4BB0-B03F-6ABEEB8DAE31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D96056A7-4456-4BB0-B03F-6ABEEB8DAE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D96056A7-4456-4BB0-B03F-6ABEEB8DAE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D96056A7-4456-4BB0-B03F-6ABEEB8DAE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FEB2F3C-353C-427F-8C11-CA84A7EA5ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FEB2F3C-353C-427F-8C11-CA84A7EA5ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FEB2F3C-353C-427F-8C11-CA84A7EA5ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FEB2F3C-353C-427F-8C11-CA84A7EA5ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C0AB2A9-61BB-4E3C-92AE-BBC8A48C4A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C0AB2A9-61BB-4E3C-92AE-BBC8A48C4A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C0AB2A9-61BB-4E3C-92AE-BBC8A48C4A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C0AB2A9-61BB-4E3C-92AE-BBC8A48C4A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAE81FAF-5960-496E-BF54-7F467B21028A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE81FAF-5960-496E-BF54-7F467B21028A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE81FAF-5960-496E-BF54-7F467B21028A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE81FAF-5960-496E-BF54-7F467B21028A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
