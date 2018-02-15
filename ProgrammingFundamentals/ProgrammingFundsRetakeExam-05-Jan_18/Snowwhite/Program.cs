@@ -9,11 +9,12 @@ namespace Snowwhite
     {
         static void Main(string[] args)
         {
-            var dwarfs = new Dictionary<string, Dictionary<string, int>>();
-            var input = string.Empty;
+            var dwarfs = new List<Dwarf>();
+            Dictionary<string, int> colorsCount = new Dictionary<string, int>();
 
             Regex regex = new Regex(@"([^\s<:>]+)\s<:>\s([^\s<:>]+)\s<:>\s(\d+)");
 
+            var input = string.Empty;
             while ((input = Console.ReadLine()) != "Once upon a time")
             {
                 Match inputMatch = regex.Match(input);
@@ -22,44 +23,42 @@ namespace Snowwhite
                 var dwarfHatColor = inputMatch.Groups[2].Value;
                 var dwarfPhysics = int.Parse(inputMatch.Groups[3].Value);
 
-                if (dwarfs.ContainsKey(dwarfHatColor))
+                var dwarf = dwarfs.SingleOrDefault(d => d.Name == dwarfName && d.HatColor == dwarfHatColor);
+                if (dwarf == null)
                 {
-                    if (dwarfs[dwarfHatColor].ContainsKey(dwarfName))
+                    dwarfs.Add(new Dwarf(dwarfName, dwarfHatColor, dwarfPhysics));
+                    if (!colorsCount.ContainsKey(dwarfHatColor))
                     {
-                        if (dwarfs[dwarfHatColor][dwarfName] < dwarfPhysics)
-                        {
-                            dwarfs[dwarfHatColor][dwarfName] = dwarfPhysics;
-                        }
+                        colorsCount.Add(dwarfHatColor, 0);
                     }
-                    else
-                    {
-                        dwarfs[dwarfHatColor].Add(dwarfName, dwarfPhysics);
-                    }
+                    colorsCount[dwarfHatColor]++;
                 }
-                else
+                else if (dwarf.Physics < dwarfPhysics)
                 {
-                    dwarfs.Add(dwarfHatColor, new Dictionary<string, int>()
-                    {
-                        { dwarfName, dwarfPhysics }
-                    });
+                    dwarf.Physics = dwarfPhysics;
                 }
             }
 
-            foreach (var d in dwarfs.OrderByDescending(d => d.Value.Count()))
+            foreach (var dwarf in dwarfs.OrderByDescending(d => d.Physics).ThenByDescending(d => colorsCount[d.HatColor]))
             {
-                foreach (var dd in d.Value.OrderByDescending(a => a.Value))
-                {
-                    Console.WriteLine($"{d.Key} {dd.key} <-> {dd.value}");
-                }
+                Console.WriteLine($"({dwarf.HatColor}) {dwarf.Name} <-> {dwarf.Physics}");
+            }
+        }
+
+        public class Dwarf
+        {
+            public Dwarf(string name, string hatColor, int physics)
+            {
+                this.Name = name;
+                this.HatColor = hatColor;
+                this.Physics = physics;
             }
 
-            //foreach (var d in dwarfs.Values.OrderByDescending(d => d.Values))
-            //{
-            //    foreach (var dd in d)
-            //    {
-            //        Console.WriteLine($"{dd.Key} {dd.Value} <-> {dd.Value}");
-            //    }
-            //}
+            public string Name { get; set; }
+
+            public string HatColor { get; set; }
+
+            public int Physics { get; set; }
         }
     }
 }

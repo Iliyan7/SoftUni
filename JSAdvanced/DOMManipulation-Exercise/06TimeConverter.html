@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Converter</title>
+  <style>
+    label, input {
+      	display: inline-block;
+      	width: 5em;
+    }
+    label {
+      	text-align: right;
+    }
+  </style>
+</head>
+<body onload="attachEventsListeners()">
+<h1>Time Converter</h1>
+<div>
+  <label for="days">Days: </label>
+  <input type="text" id="days">
+  <input id="daysBtn" type="button" value="Convert">
+</div>
+<div>
+  <label for="hours">Hours: </label>
+  <input type="text" id="hours">
+  <input id="hoursBtn" type="button" value="Convert">
+</div>
+<div>
+  <label for="minutes">Minutes: </label>
+  <input type="text" id="minutes">
+  <input id="minutesBtn" type="button" value="Convert">
+</div>
+<div>
+  <label for="seconds">Seconds: </label>
+  <input type="text" id="seconds">
+  <input id="secondsBtn" type="button" value="Convert">
+</div>
+<script>
+	function attachEventsListeners() {
+		let daysElement = document.getElementById('days');
+		let hoursElement = document.getElementById('hours');
+		let minutesElement = document.getElementById('minutes');
+		let secondsElement = document.getElementById('seconds');
+
+		let buttons = document.querySelectorAll('input[type=button]');
+		for (const button of buttons) {
+			button.addEventListener('click', onButtonClick);
+		}
+
+		let multiplier = {
+			'days' : 86400,
+			'hours' : 3600,
+			'minutes' : 60,
+			'seconds' : 1
+		}
+
+		function onButtonClick(event) {
+			let inputId = event.target.id.substring(0, event.target.id.length - 3);
+			let inputValue = document.getElementById(inputId).value;
+			
+			let seconds = inputValue * multiplier[inputId];
+
+			daysElement.value = seconds / multiplier['days'];
+			hoursElement.value = seconds / multiplier['hours'];
+			minutesElement.value = seconds / multiplier['minutes'];
+			secondsElement.value = seconds;
+		}
+	}
+</script>
+</body>
+</html>
