@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace _01Padawan_Equipment
+namespace _01PadawanEquipment
 {
     class Program
     {
