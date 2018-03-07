@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Fill Dropdown</title>
+	<meta charset="UTF-8">
+	<title>Fill Dropdown</title>
 </head>
 <body>
-<h1>Dropdown Menu</h1>
-<div>
-    <select id="menu"></select>
-</div>
-  <label for="newItemText">Text: </label><input type="text" id="newItemText" />
-  <label for="newItemValue">Value: </label><input type="text" id="newItemValue" />
-  <input type="button" value="Add" onclick="addItem()">
-  <script>
-        function addItem() {
-            let text = document.getElementById('newItemText');
-            let val = document.getElementById('newItemValue');
+	<h1>Dropdown Menu</h1>
+	<div>
+		<select id="menu"></select>
+	</div>
+	<label for="newItemText">Text: </label>
+	<input type="text" id="newItemText" />
+	<label for="newItemValue">Value: </label>
+	<input type="text" id="newItemValue" />
+	<input type="button" value="Add" onclick="addItem()">
+	<script>
+		function addItem() {
+			let text = document.getElementById('newItemText');
+			let val = document.getElementById('newItemValue');
 
-            let option = document.createElement('option');
-            option.textContent = text.value;
-            option.value = val.value;
+			let option = document.createElement('option');
+			option.textContent = text.value;
+			option.value = val.value;
 
-            document.getElementById('menu').appendChild(option);
+			document.getElementById('menu').appendChild(option);
 
-            text.value = '';
-            val.value = '';
-        }
-    </script>
+			text.value = '';
+			val.value = '';
+		}
+	</script>
 </body>
 </html>

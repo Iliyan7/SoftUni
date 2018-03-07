@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Generator</title>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+        crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="wrapper">
+        © Software University Foundation (softuni.org). This work is licensed under the CC-BY- NC-SA license. Follow us: Page 17
+        of 17
+    </div>
+    <script>
+        window.onload = function () {
+                /* let createBook = */ (function bookGenerator() {
+                let id = 1;
+                return function (selector, titleName, authorName, isbnValue) {
+                    let container = $(selector);
+                    let div = $('<div>').prop('id', `book${id}`);
+                    let title = $('<p>').addClass('title').text(titleName);
+                    let author = $('<p>').addClass('author').text(authorName);
+                    let isbn = $('<p>').addClass('isbn').text(isbnValue);
+                    let selectBtn = $('<button>').text('Select');
+                    let deselectBtn = $('<button>').text('Deselect');
+
+                    selectBtn.on('click', () => {
+                        div.css('border', '2px solid blue')
+                    })
+
+                    deselectBtn.on('click', () => {
+                        div.css('border', 'none')
+                    })
+
+                    container.append(div.append(title).append(author).append(isbn).append(selectBtn).append(deselectBtn));
+                    id++;
+                }
+            })();
+
+            createBook("#wrapper", "Alice in Wonderland", "Lewis Carroll", 1111);
+            createBook("#wrapper", "Alice in Wonderland", "Lewis Carroll", 1111);
+        }
+    </script>
+</body>
+</html>
