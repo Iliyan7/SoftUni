@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phonebook</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <style>
+        ul {
+            padding: 10px;
+            height: 100px;
+            width: 400px;
+            border: 1px solid;
+            position: relative;
+            overflow: auto;
+        }
+        li {
+            padding: 1px;
+        }
+
+        button {
+            margin-right: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phonebook</h1>
+    <ul id="phonebook"></ul>
+    <button id="btnLoad">Load</button>
+    <h2>Create/Edit Contact</h2>
+    Person:
+    <input type="text" id="person" />
+    <br> Phone:
+    <input type="text" id="phone" />
+    <br>
+    <button id="btnCreate">Create</button>
+    <script>
+        $(function () {
+            $('#btnLoad').click(loadContacts);
+            $('#btnCreate').click(createContact);
+
+            let baseServiceUrl = 'https://phonebook-33aaa.firebaseio.com/phonebook';
+
+            function loadContacts() {
+                $('#phonebook').empty();
+                $.get(baseServiceUrl + '.json')
+                    .then(displayContact)
+                    .catch(displayError);
+            }
+
+            function displayContact(res) {
+                for (let key in res) {
+                    let person = res[key]['person'];
+                    let phone = res[key]['phone'];
+                    let li = $('<li>').text(person + ': ' + phone + ' ');
+                    $('<button>').text('Edit').click(editContact.bind(this, { key, person, phone })).appendTo(li);
+                    $('<button>').text('Delete').click(deleteContact.bind(this, key)).appendTo(li);
+                    li.appendTo('#phonebook');
+                }
+            }
+
+            function createContact() {
+                let newContactJSON = JSON.stringify({
+                    person: $('#person').val(),
+                    phone: $('#phone').val()
+                });
+
+                $.post(baseServiceUrl + '.json', newContactJSON)
+                    .then(loadContacts)
+                    .catch(displayError);
+
+                $('#person').val('');
+                $('#phone').val('');
+            }
+
+            function editContact(obj) {
+                let newContactJSON = JSON.stringify({
+                    person: $('#person').val() == '' ? obj.person : $('#person').val(),
+                    phone: $('#phone').val() == '' ? obj.phone : $('#phone').val()
+                });
+
+                $.ajax({
+                    method: 'PATCH',
+                    url: baseServiceUrl + '/' + obj.key + '.json',
+                    data: newContactJSON
+                })
+                    .then(loadContacts)
+                    .catch(displayError);
+            }
+
+            function deleteContact(key) {
+                $.ajax({
+                    method: 'DELETE',
+                    url: baseServiceUrl + '/' + key + '.json'
+                })
+                    .then(loadContacts)
+                    .catch(displayError)
+            }
+
+             function displayError(err) {
+                $('#phonebook').append($('<li>Error</li>'));
+            }
+        });</script>
+</body>
+</html>
