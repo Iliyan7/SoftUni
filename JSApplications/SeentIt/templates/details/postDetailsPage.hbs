@@ -1,13 +1,16 @@
+{{>navbar}}
 <section id="viewComments">
     <div class="post">
-         {{> postDetails}}
+        {{> postDetails}}
     </div>
     <div class="post post-content">
-        <form id="commentForm" action="#/create/comment" method="post">
+        <form id="commentForm" action="#/create/comment/{{post._id}}" method="post">
             <label>Comment</label>
             <textarea name="content" type="text"></textarea>
             <input type="submit" value="Add Comment" id="btnPostComment">
         </form>
     </div>
-    <!-- foreach comments here -->
+        {{#each comments}}
+            {{> comment}}
+        {{/each}}
 </section>

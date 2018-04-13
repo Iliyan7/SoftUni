@@ -23,11 +23,11 @@
       "auth",
       "comments",
       "posts",
+      "helper",
       "notify",
       "remote",
       "validate",
-      "sessionStorage",
-      "btoa"
+      "sessionStorage"
     ]
   }
 }
