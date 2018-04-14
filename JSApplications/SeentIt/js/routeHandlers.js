@@ -41,7 +41,7 @@ handlers.loginPost = (context) => {
 handlers.logout = (context) => {
   auth.logout()
     .then(userData => {
-      sessionStorage.clear()
+      window.sessionStorage.clear()
       context.redirect('#/home')
     })
     .catch(notify.handleError)
@@ -79,7 +79,7 @@ handlers.catalog = (context) => {
       $.each(posts, (index, post) => {
         post.rank = index + 1
         post.timeCreated = helper.calcTime(post._kmd.ect)
-        post.isAuthor = post.author === sessionStorage.getItem('username')
+        post.isAuthor = post.author === window.sessionStorage.getItem('username')
       })
 
       helper.attachUserData(context)
@@ -125,7 +125,7 @@ handlers.createPostPost = (context) => {
     return
   }
 
-  let author = sessionStorage.getItem('username')
+  let author = window.sessionStorage.getItem('username')
   let {url, imageUrl, title, description} = context.params
 
   if (validate.post(url, title)) {
@@ -171,7 +171,7 @@ handlers.editPostPost = (context) => {
     return
   }
 
-  let author = sessionStorage.getItem('username')
+  let author = window.sessionStorage.getItem('username')
   let { postId, url, imageUrl, title, description } = context.params
 
   if (validate.post(url, title)) {
@@ -206,12 +206,12 @@ handlers.myPosts = (context) => {
     return
   }
 
-  posts.getMyPosts(sessionStorage.getItem('username'))
+  posts.getMyPosts(window.sessionStorage.getItem('username'))
     .then(posts => {
       $.each(posts, (index, post) => {
         post.rank = index + 1
         post.timeCreated = helper.calcTime(post._kmd.ect)
-        post.isAuthor = post.author === sessionStorage.getItem('username')
+        post.isAuthor = post.author === window.sessionStorage.getItem('username')
       })
 
       helper.attachUserData(context)
@@ -245,11 +245,11 @@ handlers.details = (context) => {
   Promise.all([postPromise, commentsPromise])
     .then(([post, comments]) => {
       post.timeCreated = helper.calcTime(post._kmd.ect)
-      post.isAuthor = post.author === sessionStorage.getItem('username')
+      post.isAuthor = post.author === window.sessionStorage.getItem('username')
 
       $.each(comments, (index, comment) => {
         comment.timeCreated = helper.calcTime(comment._kmd.ect)
-        comment.isAuthor = comment.author === sessionStorage.getItem('username')
+        comment.isAuthor = comment.author === window.sessionStorage.getItem('username')
       })
 
       helper.attachUserData(context)
@@ -279,7 +279,7 @@ handlers.createCommentPost = (context) => {
 
   let postId = context.params.postId
   let content = context.params.content
-  let author = sessionStorage.getItem('username')
+  let author = window.sessionStorage.getItem('username')
 
   if (content === '') {
     notify.showError('Comment cannot be empty!')

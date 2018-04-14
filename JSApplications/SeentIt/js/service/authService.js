@@ -1,12 +1,12 @@
 let auth = (() => {
   function isAuth () {
-    return sessionStorage.getItem('authtoken') !== null
+    return window.sessionStorage.getItem('authtoken') !== null
   }
 
   function saveSession (userData) {
-    sessionStorage.setItem('authtoken', userData._kmd.authtoken)
-    sessionStorage.setItem('username', userData.username)
-    sessionStorage.setItem('userId', userData._id)
+    window.sessionStorage.setItem('authtoken', userData._kmd.authtoken)
+    window.sessionStorage.setItem('username', userData.username)
+    window.sessionStorage.setItem('userId', userData._id)
   }
 
   function register (username, password) {
