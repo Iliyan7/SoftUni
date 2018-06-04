@@ -15,7 +15,7 @@ namespace WebServer.Server.Http.Contracts
 
         IDictionary<string, string> QueryParameters { get; }
 
-        IHttpHeaderCollection HeaderCollection { get; }
+        IHttpHeaderCollection Headers { get; }
 
         IDictionary<string, string> FormData { get; }
 

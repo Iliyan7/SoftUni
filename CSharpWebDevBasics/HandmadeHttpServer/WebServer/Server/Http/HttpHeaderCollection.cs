@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WebServer.Server.Http.Contracts;
 
 namespace WebServer.Server.Http
@@ -46,7 +47,7 @@ namespace WebServer.Server.Http
 
         public override string ToString()
         {
-            return string.Join(Environment.NewLine, this.headers);
+            return string.Join(Environment.NewLine, this.headers.Select(h => h.Value));
         }
     }
 }

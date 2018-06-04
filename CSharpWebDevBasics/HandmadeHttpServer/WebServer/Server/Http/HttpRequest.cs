@@ -13,7 +13,7 @@ namespace WebServer.Server.Http
         {
             this.UrlParameters = new Dictionary<string, string>();
             this.QueryParameters = new Dictionary<string, string>();
-            this.HeaderCollection = new HttpHeaderCollection();
+            this.Headers = new HttpHeaderCollection();
             this.FormData = new Dictionary<string, string>();
 
             this.ParseReuqest(requestString);
@@ -29,7 +29,7 @@ namespace WebServer.Server.Http
 
         public IDictionary<string, string> QueryParameters { get; }
 
-        public IHttpHeaderCollection HeaderCollection { get; }
+        public IHttpHeaderCollection Headers { get; }
 
         public IDictionary<string, string> FormData { get; }
 
@@ -40,20 +40,25 @@ namespace WebServer.Server.Http
 
         private void ParseReuqest(string requestString)
         {
+            if (string.IsNullOrEmpty(requestString))
+            {
+                throw new BadRequestException("No request line");
+            }
+
             var requestLines = requestString
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                .Split(Environment.NewLine);
 
             var firstLine = requestLines[0].Trim()
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if(requestLines.Length != 3 || firstLine[2].ToLower() != "http/1.1")
+            if(firstLine.Length != 3 || firstLine[2].ToLower() != "http/1.1")
             {
                 throw new BadRequestException("Invalid request line");
             }
 
             this.Method = this.ParseRequestMethod(firstLine[0]);
             this.Url = firstLine[1];
-            this.Path = this.Url.Substring(0, this.Url.IndexOfAny(new char[] { '?', '#' }));
+            this.Path = this.Url.Split(new char[] { '?', '#' }, StringSplitOptions.None)[0];
             this.ParseHeaders(requestLines);
             this.ParseParameters();
 
@@ -71,7 +76,7 @@ namespace WebServer.Server.Http
             }
             catch (Exception)
             {
-                throw new BadRequestException("Invalid request line");
+                throw new BadRequestException("Invalid request method");
             }
         }
 
@@ -79,7 +84,7 @@ namespace WebServer.Server.Http
         {
             var endIndex = Array.IndexOf(requestLines, string.Empty);
 
-            for (int i = 0; i < endIndex; i++)
+            for (int i = 1; i < endIndex; i++)
             {
                 var headerArgs = requestLines[i]
                     .Split(": ");
@@ -87,23 +92,23 @@ namespace WebServer.Server.Http
                 var headerKey = headerArgs[0];
                 var headerValue = headerArgs[1];
 
-                this.HeaderCollection[headerKey] = new HttpHeader(headerKey, headerValue);
+                this.Headers[headerKey] = new HttpHeader(headerKey, headerValue);
             }
 
-            if(!this.HeaderCollection.ContainsKey("Host"))
+            if(!this.Headers.ContainsKey("Host"))
             {
-                throw new BadRequestException("Invalid request line");
+                throw new BadRequestException("Host header is not present");
             }
         }
 
         private void ParseParameters()
         {
-            if(this.Url.Contains("?"))
+            if(!this.Url.Contains("?"))
             {
                 return;
             }
 
-            string query = this.Url.Split('?')[1];
+            var query = this.Url.Split('?')[1];
             this.ParseQuery(query, this.QueryParameters);
         }
 
@@ -114,7 +119,9 @@ namespace WebServer.Server.Http
                 return;
             }
 
-            var queryParis = query.Split('&');
+            var queryParis = query
+                .Split('&');
+
             foreach (var queryPair in queryParis)
             {
                 var queryArgs = queryPair
