@@ -1,4 +1,5 @@
 ﻿using WebServer.Application;
+using WebServer.ByTheCakeApplication;
 using WebServer.Server;
 using WebServer.Server.Contracts;
 using WebServer.Server.Routing;
@@ -6,20 +7,22 @@ using WebServer.Server.Routing.Contracts;
 
 namespace WebServer
 {
-    public class Launcher : IRunnable
+    public class Launcher
     {
         public static void Main()
         {
-            new Launcher().Run();
+            Run();
         }
 
-        public void Run()
+        private static void Run()
         {
-            IApplication app = new App();
-            IAppRouteConfig routeConfig = new AppRouteConfig();
+            var app = new ByTheCakeApp();
+            app.InitializeDatabase();
+
+            var routeConfig = (IAppRouteConfig)new AppRouteConfig();
             app.Config(routeConfig);
 
-            var webServer = new IISWebServer(1337, routeConfig);
+            var webServer = new HttpServer(1337, routeConfig);
             webServer.Run();
         }
     }

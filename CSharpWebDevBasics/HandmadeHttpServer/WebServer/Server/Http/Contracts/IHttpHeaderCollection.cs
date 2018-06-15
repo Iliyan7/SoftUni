@@ -1,13 +1,15 @@
-﻿namespace WebServer.Server.Http.Contracts
+﻿using System.Collections.Generic;
+
+namespace WebServer.Server.Http.Contracts
 {
     public interface IHttpHeaderCollection
     {
-        HttpHeader this[string key] { get; set; }
-
         void Add(HttpHeader header);
+
+        void Add(string key, string value);
 
         bool ContainsKey(string key);
 
-        HttpHeader GetHeader(string key);
+        ICollection<HttpHeader> GetHeaders(string key);
     }
 }

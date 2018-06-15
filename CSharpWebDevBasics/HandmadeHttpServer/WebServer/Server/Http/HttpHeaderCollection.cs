@@ -1,53 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using WebServer.Server.Http.Contracts;
 
 namespace WebServer.Server.Http
 {
     public class HttpHeaderCollection : IHttpHeaderCollection
     {
-        private readonly IDictionary<string, HttpHeader> headers;
-
+        private readonly IDictionary<string, ICollection<HttpHeader>> headers;
+        
         public HttpHeaderCollection()
         {
-            this.headers = new Dictionary<string, HttpHeader>();
-        }
-
-        public HttpHeader this[string key]
-        {
-            get => this.headers[key];
-            set => this.headers[key] = value;
+            this.headers = new Dictionary<string, ICollection<HttpHeader>>();
         }
 
         public void Add(HttpHeader header)
         {
-            this.headers[header.Key] = header;
-        }
+            var key = header.Key;
 
-        public bool ContainsKey(string key)
-        {
-            if(this.headers.ContainsKey(key))
+            if(!this.headers.ContainsKey(key))
             {
-                return true;
+                this.headers[key] = new List<HttpHeader>();
             }
 
-            return false;
+            this.headers[key].Add(header);
         }
 
-        public HttpHeader GetHeader(string key)
+        public void Add(string key, string value)
         {
-            if(this.headers.ContainsKey(key))
+            this.Add(new HttpHeader(key, value));
+        }
+
+        public bool ContainsKey(string key) => this.headers.ContainsKey(key);
+
+        public ICollection<HttpHeader> GetHeaders(string key)
+        {
+            if(!this.headers.ContainsKey(key))
             {
-                return this.headers[key];
+                throw new KeyNotFoundException();
             }
 
-            return null;
+            return this.headers[key];
         }
 
         public override string ToString()
         {
-            return string.Join(Environment.NewLine, this.headers.Select(h => h.Value));
+            var headersString = new StringBuilder();
+
+            foreach (var headers in this.headers.Values)
+            {
+                headersString.AppendLine(string.Join(Environment.NewLine, headers));
+            }
+
+            return headersString.ToString();
         }
     }
 }

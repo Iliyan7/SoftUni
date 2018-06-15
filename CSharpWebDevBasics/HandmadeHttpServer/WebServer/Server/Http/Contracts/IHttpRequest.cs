@@ -17,6 +17,10 @@ namespace WebServer.Server.Http.Contracts
 
         IHttpHeaderCollection Headers { get; }
 
+        IHttpCookieCollection Cookies { get; }
+
+        IHttpSession Session { get; set; }
+
         IDictionary<string, string> FormData { get; }
 
         void AddUrlParameter(string key, string value);

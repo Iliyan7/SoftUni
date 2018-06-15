@@ -2,26 +2,24 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using WebServer.Server.Contracts;
-using WebServer.Server.Routing;
-using WebServer.Server.Routing.Contracts;
+using WebServer.Contracts;
 
-namespace WebServer.Server
+namespace WebServer
 {
-    public class IISWebServer : IRunnable
+    public class HttpServer : IRunnable
     {
         private readonly int port;
 
-        private readonly IServerRouteConfig serverRouteConfig;
+        private readonly IHandleable mvcRequestHandler;
 
         private readonly TcpListener tcpListener;
 
         private bool isRunning;
 
-        public IISWebServer(int port, IAppRouteConfig routeConfig)
+        public HttpServer(int port, IHandleable mvcRequestHandler)
         {
             this.port = port;
-            this.serverRouteConfig = new ServerRouteConfig(routeConfig);
+            this.mvcRequestHandler = mvcRequestHandler;
 
             this.tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
         }
@@ -33,7 +31,7 @@ namespace WebServer.Server
 
             Console.WriteLine($"Server started. Listening to TCP clients at 127.0.0.1:{this.port}");
 
-            Task task = Task.Run(this.ListenLoop);
+            var task = Task.Run(this.ListenLoop);
             task.Wait();
         }
 
@@ -42,7 +40,7 @@ namespace WebServer.Server
             while(this.isRunning)
             {
                 var client = await this.tcpListener.AcceptSocketAsync();
-                var connectionHandler = new ConnectionHandler(client, this.serverRouteConfig);
+                var connectionHandler = new ConnectionHandler(client, this.mvcRequestHandler);
                 await connectionHandler.ProcessRequestAsync();
             }
         }

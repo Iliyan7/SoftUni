@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebServer.Server
+namespace WebServer.Application
 {
     public class Model
     {

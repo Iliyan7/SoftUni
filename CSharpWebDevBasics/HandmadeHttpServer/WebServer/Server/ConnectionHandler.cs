@@ -40,9 +40,8 @@ namespace WebServer.Server
                 Console.WriteLine(httpRequest);
                 Console.WriteLine($"-----RESPONSE-----");
                 Console.WriteLine(httpResponse);
-                Console.WriteLine("------END-----");
+                //Console.WriteLine("------END-----");
             }
-            //else Console.WriteLine("EMPTY REQUEST!");
 
             this.client.Shutdown(SocketShutdown.Both);
         }

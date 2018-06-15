@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using WebServer.Server.Enums;
 using WebServer.Server.Exepctions;
@@ -14,6 +15,7 @@ namespace WebServer.Server.Http
             this.UrlParameters = new Dictionary<string, string>();
             this.QueryParameters = new Dictionary<string, string>();
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
             this.FormData = new Dictionary<string, string>();
 
             this.ParseReuqest(requestString);
@@ -30,6 +32,10 @@ namespace WebServer.Server.Http
         public IDictionary<string, string> QueryParameters { get; }
 
         public IHttpHeaderCollection Headers { get; }
+
+        public IHttpCookieCollection Cookies { get; }
+
+        public IHttpSession Session { get; set; }
 
         public IDictionary<string, string> FormData { get; }
 
@@ -59,13 +65,17 @@ namespace WebServer.Server.Http
             this.Method = this.ParseRequestMethod(firstLine[0]);
             this.Url = firstLine[1];
             this.Path = this.Url.Split(new char[] { '?', '#' }, StringSplitOptions.None)[0];
+
             this.ParseHeaders(requestLines);
+            this.ParseCookies();
             this.ParseParameters();
 
             if (this.Method == HttpRequestMethod.Post)
             {
                 this.ParseQuery(requestLines[requestLines.Length - 1], this.FormData);
             }
+
+            this.SetSession();
         }
 
         private HttpRequestMethod ParseRequestMethod(string method)
@@ -92,12 +102,41 @@ namespace WebServer.Server.Http
                 var headerKey = headerArgs[0];
                 var headerValue = headerArgs[1];
 
-                this.Headers[headerKey] = new HttpHeader(headerKey, headerValue);
+                this.Headers.Add(new HttpHeader(headerKey, headerValue));
             }
 
             if(!this.Headers.ContainsKey("Host"))
             {
                 throw new BadRequestException("Host header is not present");
+            }
+        }
+
+        private void ParseCookies()
+        {
+            if(this.Headers.ContainsKey("Cookie"))
+            {
+                var allCookieHeaders = this.Headers.GetHeaders("Cookie");
+
+                foreach (var cookieHeader in allCookieHeaders)
+                {
+                    var cookies = cookieHeader
+                        .Value
+                        .Split("; ")
+                        .ToList();
+
+                    foreach (var cookie in cookies)
+                    {
+                        if (!cookie.Contains('='))
+                        {
+                            continue;
+                        }
+
+                        var args = cookie
+                            .Split('=');
+
+                        this.Cookies.Add(new HttpCookie(args[0], args[1], false));
+                    }
+                }
             }
         }
 
@@ -133,6 +172,17 @@ namespace WebServer.Server.Http
                 }
 
                 dict.Add(WebUtility.UrlDecode(queryArgs[0]), WebUtility.UrlDecode(queryArgs[1]));
+            }
+        }
+
+        private void SetSession()
+        {
+            if(this.Cookies.ContainsKey(SessionStorage.SessionKey))
+            {
+                var sessionCookie = this.Cookies.GetCookie(SessionStorage.SessionKey);
+                var sessionId = sessionCookie.Value;
+
+                this.Session = SessionStorage.GetSession(sessionId);
             }
         }
     }

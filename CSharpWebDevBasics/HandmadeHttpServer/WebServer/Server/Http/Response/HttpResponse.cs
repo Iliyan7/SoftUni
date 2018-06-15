@@ -9,20 +9,20 @@ namespace WebServer.Server.Http.Response
         protected HttpResponse()
         {
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
         }
 
         public HttpStatusCode StatusCode { get; protected set; }
 
         public IHttpHeaderCollection Headers { get; }
 
-        private string StatusCodeMessage => this.StatusCode.ToString();
+        public IHttpCookieCollection Cookies { get; }
 
         public override string ToString()
         {
             var response = new StringBuilder();
-            response.AppendLine($"HTTP/1.1 {(int)this.StatusCode} {this.StatusCodeMessage}");
+            response.AppendLine($"HTTP/1.1 {(int)this.StatusCode} {this.StatusCode.ToString()}");
             response.AppendLine(this.Headers.ToString());
-            response.AppendLine();
 
             return response.ToString();
         }
