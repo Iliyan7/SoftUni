@@ -24,7 +24,7 @@ namespace WebServer.Http
         {
             if(!this.values.ContainsKey(key))
             {
-                throw new KeyNotFoundException();
+                return null;
             }
 
             return this.values[key];

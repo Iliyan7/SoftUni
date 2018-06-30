@@ -6,8 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\WebServer\WebServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\css\" />
+    <Folder Include="Resources\js\" />
   </ItemGroup>
 
 </Project>

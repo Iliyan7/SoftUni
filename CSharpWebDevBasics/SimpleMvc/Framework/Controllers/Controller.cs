@@ -1,61 +1,99 @@
-﻿using Framework.Interfaces;
-using Framework.Interfaces.Generic;
-using Framework.ViewEngine;
-using Framework.ViewEngine.Generic;
+﻿using Framework.ActionResults;
+using Framework.Attributes.Validation;
+using Framework.Contracts;
+using Framework.Models;
+using Framework.Security;
+using Framework.Views;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using WebServer.Http.Contracts;
 
 namespace Framework.Controllers
 {
-    public class Controller
+    public abstract class Controller
     {
-        protected IActionResult View([CallerMemberName]string action = "")
+        protected Controller()
         {
-            var controller = this.GetType().Name.Replace(MvcContext.Instance.ControllersSuffix, string.Empty);
+            this.Model = new ViewModel();
+            this.User = new Authentication();
+        }
 
-            var fullQualifiedName = string.Format("{0}.{1}.{2}.{3}, {0}",
-                MvcContext.Instance.AssemblyName,
+        protected internal IHttpRequest Request { get; set; }
+
+        protected ViewModel Model { get; }
+
+        protected Authentication User { get; private set; }
+
+        protected IViewable View([CallerMemberName]string action = "")
+        {
+            this.Model["displayType"] = this.User.IsAuthenticated ? "block" : "none";
+
+            var controller = this.GetType()
+                .Name
+                .Replace(MvcContext.Instance.ControllersSuffix, string.Empty);
+
+            var fullQualifiedName = string.Format("{0}\\{1}\\{2}",
                 MvcContext.Instance.ViewsFolder,
                 controller,
                 action);
 
-            return new ActionResult(fullQualifiedName);
+            IRenderable view = new View(fullQualifiedName, this.Model.Data);
+
+            return new ViewResult(view);
         }
 
-        protected IActionResult View(string controller, string action)
+        protected IRedirectable RedirectToAction(string redirectUrl)
         {
-            var fullQualifiedName = string.Format("{0}.{1}.{2}.{3}, {0}",
-                MvcContext.Instance.AssemblyName,
-                MvcContext.Instance.ViewsFolder,
-                controller,
-                action);
-
-            return new ActionResult(fullQualifiedName);
+            return new RedirectResult(redirectUrl);
         }
 
-        protected IActionResult<T> View<T>(T model, [CallerMemberName]string action = "")
+        protected bool IsValidModel(object bindingModel)
         {
-            var controller = this.GetType().Name.Replace(MvcContext.Instance.ControllersSuffix, string.Empty);
+            foreach (var property in bindingModel.GetType().GetProperties())
+            {
+                var attributes = property
+                    .GetCustomAttributes()
+                    .Where(a => a is PropertyAttribute)
+                    .Cast<PropertyAttribute>();
 
-            var fullQualifiedName = string.Format("{0}.{1}.{2}.{3}, {0}",
-                MvcContext.Instance.AssemblyName,
-                MvcContext.Instance.ViewsFolder,
-                controller,
-                action);
+                if(!attributes.Any())
+                {
+                    continue;
+                }
 
-            return new ActionResult<T>(fullQualifiedName, model);
+                foreach (PropertyAttribute attribute in attributes)
+                {
+                    if(!attribute.IsValid(property.GetValue(bindingModel)))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
-        protected IActionResult<T> View<T>(T model, string controller, string action)
+        protected internal void InitializeUser()
         {
-            var fullQualifiedName = string.Format("{0}.{1}.{2}.{3}, {0}",
-                MvcContext.Instance.AssemblyName,
-                MvcContext.Instance.ViewsFolder,
-                controller,
-                action);
+            var user = this.Request
+                .Session
+                .Get<string>("username");
 
-            return new ActionResult<T>(fullQualifiedName, model);
+            if (user != null)
+            {
+                this.User = new Authentication(user);
+            }
         }
 
+        protected void SignIn(string name)
+        {
+            this.Request.Session.Add("username", name);
+        }
 
+        protected void SignOut()
+        {
+            this.Request.Session.Clear();
+        }
     }
 }

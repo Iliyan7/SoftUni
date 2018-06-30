@@ -1,6 +1,6 @@
 ﻿using Framework.Attributes.Methods;
 using Framework.Controllers;
-using Framework.Interfaces;
+using Framework.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,74 +14,61 @@ namespace Framework.Routers
 {
     public class ControllerRouter : IHandleable
     {
-        private IDictionary<string, string> getParams;
-        private IDictionary<string, string> postParams;
-        private string requestMethod;
-        private string controllerName;
-        private string actionName;
-        private object[] methodParams;
+        private const string DEFAULT_PATH = "/";
+        private const string DEFAULT_CONTROLLER = "HomeController";
+        private const string DEFAULT_ACTION = "Index";
 
         public IHttpResponse Handle(IHttpRequest request)
         {
-            this.getParams = request.UrlParameters;
-            this.postParams = request.FormData;
-            this.requestMethod = request.Method.ToString();
+            IDictionary<string, string> getParams = request.UrlParameters;
+            IDictionary<string, string> postParams = request.FormData;
+            string requestMethod = request.Method.ToString();
 
-            var pathParts = request.Path
-                .Split('/');
+            this.GetControllerAndActionName(request.Path, out string controllerName, out string actionName);
 
-            if(pathParts.Length != 2)
-            {
-                throw new ArgumentException("Invalid URL");
-            }
+            var controller = this.GetController(controllerName, request);
+            var action = this.GetAction(controller, requestMethod, actionName);
 
-            this.controllerName = $"{CapitalizeFirstLetter(pathParts[0])}Controller";
-            this.actionName = CapitalizeFirstLetter(pathParts[1]);
-
-            var method = this.GetMethod();
-
-            if(method == null)
+            if (action == null)
             {
                 return new NotFoundResponse();
             }
 
-            var parameters = method.GetParameters();
+            IEnumerable<ParameterInfo> parameters = action.GetParameters();
 
-            this.methodParams = new object[parameters.Count()];
+            var actionParams = this.AddParameters(parameters, getParams, postParams);
 
-            int index = 0;
-            foreach (var param in parameters)
+            try
             {
-                if(param.ParameterType.IsPrimitive || param.ParameterType == typeof(string))
-                {
-                    object value = this.getParams[param.Name];
-                    this.methodParams[index++] = Convert.ChangeType(value, param.ParameterType);
-                }
-                else
-                {
-                    var bindingModelType = param.ParameterType;
-                    object bindingModel = Activator.CreateInstance(bindingModelType);
-
-                    var properties = bindingModelType.GetProperties();
-
-                    foreach (var property in properties)
-                    {
-                        property.SetValue(bindingModel, Convert.ChangeType(this.postParams[property.Name], property.PropertyType));
-                    }
-
-                    this.methodParams[index++] = Convert.ChangeType(bindingModel, bindingModelType);
-                }
+                var response = this.GetResponse(controller, action, actionParams);
+                return response;
             }
+            catch (Exception ex)
+            {
+                return new InternalServerErrorResponse(ex);
+            }
+        }
 
-            var actionResult = (IInvocable)this.GetMethod()
-                .Invoke(this.GetController(), this.methodParams);
+        private void GetControllerAndActionName(string path, out string controllerName, out string actionName)
+        {
+            if (path == DEFAULT_PATH)
+            {
+                controllerName = DEFAULT_CONTROLLER;
+                actionName = DEFAULT_ACTION;
+            }
+            else
+            {
+                var controllerAndAction = path
+                    .Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var content = actionResult.Invoke();
+                if (controllerAndAction.Length != 2)
+                {
+                    throw new ArgumentException("Invalid URL");
+                }
 
-            var response = new ContentResponse(HttpStatusCode.OK, content);
-
-            return response;
-            
+                controllerName = CapitalizeFirstLetter(controllerAndAction[0]) + MvcContext.Instance.ControllersSuffix;
+                actionName = CapitalizeFirstLetter(controllerAndAction[1]);
+            }
         }
 
         private string CapitalizeFirstLetter(string str)
@@ -89,24 +76,49 @@ namespace Framework.Routers
             return string.Format("{0}{1}", char.ToUpper(str[0]), str.Substring(1));
         }
 
-        private MethodInfo GetMethod()
+        private Controller GetController(string controllerName, IHttpRequest request)
+        {
+            var controllerFullQualifiedName = string.Format("{0}.{1}.{2}, {0}",
+                MvcContext.Instance.AssemblyName,
+                MvcContext.Instance.ControllersFolder,
+                controllerName);
+
+            var type = Type.GetType(controllerFullQualifiedName);
+
+            if (type == null)
+            {
+                return null;
+            }
+
+            var controller = (Controller)Activator.CreateInstance(type);
+
+           if (controller != null)
+            {
+                controller.Request = request;
+                controller.InitializeUser();
+            }
+
+            return controller;
+        }
+
+        private MethodInfo GetAction(Controller controller, string requestMethod, string actionName)
         {
             MethodInfo method = null;
 
-            foreach (var methodInfo in this.GetSuitableMethods())
+            foreach (var methodInfo in this.GetSuitableMethods(controller, actionName))
             {
                 var attributes = methodInfo
                     .GetCustomAttributes()
                     .Where(a => a is HttpMethodAttribute);
 
-                if(!attributes.Any() && this.requestMethod == "GET")
+                if(!attributes.Any() && requestMethod == "Get")
                 {
                     return methodInfo;
                 }
 
                 foreach (HttpMethodAttribute attribute in attributes)
                 {
-                    if (attribute.IsValid(this.requestMethod))
+                    if (attribute.IsValid(requestMethod))
                     {
                         return methodInfo;
                     }
@@ -116,38 +128,82 @@ namespace Framework.Routers
             return method;
         }
 
-        private IEnumerable<MethodInfo> GetSuitableMethods()
+        private IEnumerable<MethodInfo> GetSuitableMethods(Controller controller, string actionName)
         {
-            var controller = this.GetController();
-
             if(controller == null)
             {
                 return new MethodInfo[0];
             }
 
-            return this.GetController()
+            return controller
                 .GetType()
                 .GetMethods()
-                .Where(m => m.Name == this.actionName);
+                .Where(m => m.Name == actionName);
         }
 
-        private Controller GetController()
+        private object[] AddParameters(IEnumerable<ParameterInfo> parameters, IDictionary<string, string> getParams, IDictionary<string, string> postParams)
         {
-            var controllerFullQualified = string.Format("{0}.{1}.{2}, {0}",
-                MvcContext.Instance.AssemblyName,
-                MvcContext.Instance.ControllersFolder,
-                this.controllerName);
+            var actionParams = new object[parameters.Count()];
 
-            var type = Type.GetType(controllerFullQualified);
-
-            if(type == null)
+            var i = 0;
+            foreach (var param in parameters)
             {
-                return null;
+                if (param.ParameterType.IsPrimitive || param.ParameterType == typeof(string))
+                {
+                    actionParams[i] = this.ProcessPrimitiveParam(param, getParams);
+                }
+                else
+                {
+                    actionParams[i] = this.ProcessComplexParam(param, postParams);
+
+                }
             }
 
-            var controller = (Controller)Activator.CreateInstance(type);
+            return actionParams;
+        }
 
-            return controller;
+        private object ProcessPrimitiveParam(ParameterInfo param, IDictionary<string, string> getParams)
+        {
+            object value = getParams[param.Name];
+            return Convert.ChangeType(value, param.ParameterType);
+        }
+
+        private object ProcessComplexParam(ParameterInfo param, IDictionary<string, string> postParams)
+        {
+            var bindingModelType = param.ParameterType;
+
+            object bindingModel = Activator.CreateInstance(bindingModelType);
+
+            IEnumerable<PropertyInfo> properties = bindingModelType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                property.SetValue(bindingModel, Convert.ChangeType(postParams[property.Name], property.PropertyType));
+            }
+
+            return Convert.ChangeType(bindingModel, bindingModelType);
+        }
+
+        private IHttpResponse GetResponse(Controller controller, MethodInfo action, object[] actionParams)
+        {
+            var actionResult = action.Invoke(controller, actionParams);
+
+            IHttpResponse response = null;
+
+            if (actionResult is IViewable)
+            {
+                var content = ((IViewable)actionResult).Invoke();
+
+                response = new ContentResponse(HttpStatusCode.OK, content);
+            }
+            else if (actionResult is IRedirectable)
+            {
+                var redirectUrl = ((IRedirectable)actionResult).Invoke();
+
+                response = new RedirectResponse(redirectUrl);
+            }
+
+            return response;
         }
     }
 }
