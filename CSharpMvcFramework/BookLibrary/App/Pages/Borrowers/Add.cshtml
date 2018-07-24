@@ -1,0 +1,23 @@
+﻿@page
+@model AddModel
+@{
+    ViewData["Title"] = "Add Borrower";
+}
+
+<h2 class="my-sm-2">Add Borrower</h2>
+<form asp-page="/Borrowers/Add">
+    <form-group asp-for="@Model.Borrower.Name"></form-group>
+    <form-group asp-for="@Model.Borrower.PhoneNumber"></form-group>
+    <form-group asp-for="@Model.Borrower.Address"></form-group>
+    <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-success">Add borrower</button>
+            <button type="reset" class="btn btn-light">Reset</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

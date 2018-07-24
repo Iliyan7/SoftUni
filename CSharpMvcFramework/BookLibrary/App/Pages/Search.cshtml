@@ -1,0 +1,17 @@
+﻿@page
+@model SearchModel
+@{
+    ViewData["Title"] = @Model.SearchResult.SearchTerm;
+}
+
+<h2 class="my-sm-2">Search results: "@Model.SearchResult.SearchTerm"</h2>
+<ul>
+    @foreach (var author in Model.SearchResult.Authors)
+    {
+        <li><a asp-page="/Authors/Details" asp-route-id="@author.Id">@Html.Mark(author.Name, Model.SearchResult.SearchTerm)</a> (author)</li>
+    }
+    @foreach (var book in Model.SearchResult.Books)
+    {
+        <li><a asp-page="/Books/Details" asp-route-id="@book.Id">@Html.Mark(book.Title, Model.SearchResult.SearchTerm)</a> (book)</li>
+    }
+</ul>

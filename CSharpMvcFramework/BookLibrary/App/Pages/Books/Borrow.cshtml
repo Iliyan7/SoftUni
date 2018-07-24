@@ -1,0 +1,32 @@
+﻿@page "{id:int}"
+@model BorrowModel
+
+@{
+    ViewData["Title"] = "Borrow";
+}
+
+<h2 class="my-sm-2">Borrow Book</h2>
+<form asp-page="/Books/Borrow">
+
+    <div class="form-group row">
+        <label asp-for="@Model.Borrower.BorrowerId" class="col-sm-2 col-form-label text-sm-right"></label>
+        <div class="col-sm-5">
+            <select asp-for="@Model.Borrower.BorrowerId" asp-items="@Model.BorrowerList" class="custom-select"></select>
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="@Model.Borrower.BorrowerId" class="text-danger"></span>
+        </div>
+    </div>
+    <form-group asp-for="@Model.Borrower.StartDate"></form-group>
+    <form-group asp-for="@Model.Borrower.EndDate"></form-group>
+    <div class="form-group row">
+        <div class="col-sm-5 offset-sm-2">
+            <button type="submit" class="btn btn-success">Borrow</button>
+            <button type="reset" class="btn btn-light">Reset</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

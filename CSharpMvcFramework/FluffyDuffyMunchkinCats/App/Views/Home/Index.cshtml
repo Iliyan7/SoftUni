@@ -1,0 +1,16 @@
+﻿@model App.Models.CatListModel[]
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Fluffy Duffy Munchikin Cats</h1>
+<ul>
+    @foreach (var cat in Model)
+    {
+        <li><a href="/cats/details/@cat.Id">@cat.Name</a></li>
+    }
+</ul>
+<form action="/cats/add">
+    <button>Add Cat</button>
+</form>

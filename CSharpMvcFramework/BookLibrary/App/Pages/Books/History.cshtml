@@ -1,0 +1,27 @@
+﻿@page "{id:int}"
+@model HistoryModel
+@{
+    ViewData["Title"] = "History";
+}
+
+<h2 class="my-sm-2">History</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Borrower</th>
+            <th scope="col">Period</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bh in Model.BookHistoryList)
+        {
+        <tr>
+            <th scope="row">@bh.BorrowerName</th>
+            <td>@bh.Period</td>
+            <td>@bh.Status</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
