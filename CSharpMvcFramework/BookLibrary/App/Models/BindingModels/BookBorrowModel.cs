@@ -6,6 +6,11 @@ namespace App.Models.BindingModels
 {
     public class BookBorrowModel
     {
+        public BookBorrowModel()
+        {
+            this.StartDate = DateTime.Now;
+        }
+
         [Display(Name = "Name")]
         public int BorrowerId { get; set; }
 
