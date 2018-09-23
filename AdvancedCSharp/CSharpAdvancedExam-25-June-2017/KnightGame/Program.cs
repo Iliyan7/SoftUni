@@ -6,6 +6,18 @@ namespace KnightGame
 {
     public class Program
     {
+        public static readonly int[][] deltas = new int[8][]
+        {
+            new int[] {-2, -1},
+            new int[] {-2, +1},
+            new int[] {+2, -1},
+            new int[] {+2, +1},
+            new int[] {-1, -2},
+            new int[] {-1, +2},
+            new int[] {+1, -2},
+            new int[] {+1, +2}
+        };
+
         public static void Main()
         {
             var size = int.Parse(Console.ReadLine());
@@ -13,98 +25,43 @@ namespace KnightGame
             var board = new char[size][];
             PrepareBoard(board);
 
-            var knightHits = new List<Tuple<int, int, int>>();
+            var knights = new List<Knight>();
 
-            for (int i = 0; i < board.Length; i++)
+            for (int x = 0; x < board.Length; x++)
             {
-                for (int j = 0; j < board[i].Length; j++)
+                for (int y = 0; y < board[x].Length; y++)
                 {
-                    if(board[i][j] == 'K')
+                    if (board[x][y] == 'K')
                     {
-                        knightHits.Add(new Tuple<int, int, int> (GetKnightHits(board, i, j), i, j));
+                        knights.Add(new Knight()
+                        {
+                            X = x,
+                            Y = y,
+                            Targets = GetKnightAttacks(x, y, board)
+                        });
                     }
                 }
             }
 
-            knightHits = knightHits
-                .OrderByDescending(x => x.Item1)
-                .ToList();
-
-            var minRemoves = 0;
-
-            foreach (var kn in knightHits)
-            {
-                if (RemoveAndCheckWhetherHit(board, kn.Item2, kn.Item3))
-                    minRemoves++;
-
-            }
-
-            Console.WriteLine(minRemoves);
-        }
-
-        private static bool RemoveAndCheckWhetherHit(char[][] board, int x, int y)
-        {
-            board[x][y] = '0';
-
-            for (int i = 0; i < board.Length; i++)
-            {
-                for (int j = 0; j < board[i].Length; j++)
-                {
-                    if (board[i][j] == 'K')
-                    {
-                        if (GetKnightHits(board, x, y) > 0)
-                            return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private static int GetKnightHits(char[][] board, int i, int j)
-        {
             var count = 0;
-
-            foreach (var pos in GetAllValidMoves(i, j, board))
+            while (knights.Any(k => k.Targets.Count > 0))
             {
-                if (board[pos[0]][pos[1]] == 'K')
-                    count++;
-            }
+                var knight = knights.OrderByDescending(k => k.Targets.Count).First();
 
-            return count;
-        }
+                board[knight.X][knight.Y] = '0';
+                count++;
 
-        private static List<int[]> GetAllValidMoves(int x, int y, char[][] board)
-        {
-            var deltas = new int[8][]
-            {
-                new int[] {-2, -1},
-                new int[] {-2, +1},
-                new int[] {+2, -1},
-                new int[] {+2, +1},
-                new int[] {-1, -2},
-                new int[] {-1, +2},
-                new int[] {+1, -2},
-                new int[] {+1, +2}
-            };
-
-            var xCandidate = 0;
-            var yCandidate = 0;
-
-            var validPos = new List<int[]>();
-
-            for (int i = 0; i < 8; i++)
-            {
-                xCandidate = x + deltas[i][0];
-                yCandidate = y + deltas[i][1];
-
-                if(0 < xCandidate && xCandidate < board.Length && 0 < yCandidate && yCandidate < board[0].Length)
+                foreach (var targetKnightTuple in knight.Targets)
                 {
-                    validPos.Add(new int[] { xCandidate, yCandidate });
+                    var targetKnight = knights.Single(k => k.X == targetKnightTuple.Item1 && k.Y == targetKnightTuple.Item2);
+
+                    targetKnight.Targets.Remove(new Tuple<int, int>(knight.X, knight.Y));
                 }
+
+                knight.Targets.Clear();
             }
 
-            return validPos;
+            Console.WriteLine(count);
         }
 
         private static void PrepareBoard(char[][] board)
@@ -114,6 +71,38 @@ namespace KnightGame
                 board[i] = Console.ReadLine()
                     .ToCharArray();
             }
+        }
+
+        private static List<Tuple<int, int>> GetKnightAttacks(int x, int y, char[][] board)
+        {
+            var xCandidate = 0;
+            var yCandidate = 0;
+
+            var list = new List<Tuple<int, int>>();
+
+            for (int i = 0; i < 8; i++)
+            {
+                xCandidate = x + deltas[i][0];
+                yCandidate = y + deltas[i][1];
+
+                if (0 <= xCandidate && xCandidate < board.Length
+                    && 0 <= yCandidate && yCandidate < board[0].Length
+                    && board[xCandidate][yCandidate] == 'K')
+                {
+                    list.Add(new Tuple<int, int>(xCandidate, yCandidate));
+                }
+            }
+
+            return list;
+        }
+
+        private class Knight
+        {
+            public int X { get; set; }
+
+            public int Y { get; set; }
+
+            public List<Tuple<int, int>> Targets { get; set; } = new List<Tuple<int, int>>();
         }
     }
 }

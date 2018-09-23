@@ -24,29 +24,26 @@ namespace Hospital
 
                 if (!departments.ContainsKey(department))
                 {
-                    departments.Add(department, new List<string>() { patientName });
+                    departments.Add(department, new List<string>());
                 }
-                else
+
+                if (departments[department].Count < 60)
                 {
-                    if(departments[department].Count < 60)
-                        departments[department].Add(patientName);
+                    departments[department].Add(patientName);
                 }
 
                 if (!doctors.ContainsKey(doctorName))
                 {
-                    doctors.Add(doctorName, new List<string>() { patientName });
+                    doctors.Add(doctorName, new List<string>());
                 }
-                else
-                {
-                    if (doctors[doctorName].Count < 60)
-                        doctors[doctorName].Add(patientName);
-                }
+
+                doctors[doctorName].Add(patientName);
             }
 
             while ((input = Console.ReadLine()) != "End")
             {
                 var commands = input
-                    .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    .Split(' ');
 
                 if (commands.Length == 1)
                 {
@@ -81,18 +78,12 @@ namespace Hospital
 
         private static void PrintPatientsByDepartments(List<string> list, int room)
         {
-            var bed = 1;
-            var roomBedsStartFrom = room * 3 - 3;
-            var roomBedsEndAt = room * 3;
-
-            foreach (var patient in list.OrderBy(x => x))
+            foreach (var patient in list
+                .Skip(room * 3 - 3)
+                .Take(3)
+                .OrderBy(x => x))
             {
-                if (roomBedsStartFrom < bed && bed <= roomBedsEndAt)
-                {
-                    Console.WriteLine(patient);
-                }
-
-                bed++;
+                Console.WriteLine(patient);
             }
         }
 
