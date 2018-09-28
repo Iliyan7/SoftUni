@@ -26,30 +26,30 @@ namespace _03GreedyTimes
             {
                 var item = content[i];
                 var type = GetItemType(item.ToLower());
-                var amount = long.Parse(content[i + 1]);
+                var quantity = long.Parse(content[i + 1]);
 
                 if (!bag.ContainsKey(type))
                 {
                     continue;
                 }
 
-                if (IsBagCapacityReached(bagCapacity, type, amount))
+                if (IsBagCapacityReached(bagCapacity, type, quantity))
                 {
                     continue;
                 }
 
-                if (!CanGather(type, amount))
+                if (!CanGather(type, quantity))
                 {
                     continue;
                 }
 
                 if (bag[type].ContainsKey(item))
                 {
-                    bag[type][item] += amount;
+                    bag[type][item] += quantity;
                 }
                 else
                 {
-                    bag[type].Add(item, amount);
+                    bag[type].Add(item, quantity);
                 }
             }
 
@@ -72,7 +72,8 @@ namespace _03GreedyTimes
             {
                 return "Cash";
             }
-            else if (size > 3 && item.Substring(size - 3).Equals("gem"))
+            
+            else if (item.EndsWith("gem") && size > 3)
             {
                 return "Gem";
             }
@@ -81,25 +82,25 @@ namespace _03GreedyTimes
                 return "Gold";
             }
 
-            return "junk";
+            return "Junk";
         }
 
-        private static bool IsBagCapacityReached(long bagCapacity, string type, long amount)
+        private static bool IsBagCapacityReached(long bagCapacity, string type, long quantity)
         {
-            return bag[type].Values.Sum() + amount > bagCapacity;
+            return bag.Values.Sum(b => b.Values.Sum()) + quantity > bagCapacity;
         }
 
-        private static bool CanGather(string type, long amount)
+        private static bool CanGather(string type, long quantity)
         {
             if (type.Equals("Gold"))
             {
                 return true;
             }
-            else if (type.Equals("Gem") && bag["Gold"].Values.Sum() >= bag[type].Values.Sum() + amount)
+            else if (type.Equals("Gem") && bag["Gold"].Values.Sum() >= bag[type].Values.Sum() + quantity)
             {
                 return true;
             }
-            else if (type.Equals("Cash") && bag["Gem"].Values.Sum() >= bag[type].Values.Sum() + amount)
+            else if (type.Equals("Cash") && bag["Gem"].Values.Sum() >= bag[type].Values.Sum() + quantity)
             {
                 return true;
             }

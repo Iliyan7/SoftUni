@@ -59,7 +59,9 @@ namespace NumberWars
                 }
 
                 if (GameResult != Result.None)
-                    return;
+                {
+                    break;
+                }
 
                 if (firstQueue.Count == 0)
                 {
