@@ -7,153 +7,122 @@ namespace NumberWars
 {
     public class Program
     {
-        enum Result
-        {
-            None = 0,
-            FirstPlayerWin,
-            SecondPlayerWin,
-            ItsDraw
-        };
+        private const int MaxTurns = 1000000;
 
-        private static Result GameResult = Result.None;
-        private static List<string> CardsOnField = new List<string>();
+        private static Queue<KeyValuePair<int, char>> firstPlayerDeck = new Queue<KeyValuePair<int, char>>();
+        private static Queue<KeyValuePair<int, char>> secondPlayerDeck = new Queue<KeyValuePair<int, char>>();
+
+        private static List<KeyValuePair<int, char>> board = new List<KeyValuePair<int, char>>();
+
+        private static bool gameOver;
 
         public static void Main()
         {
-            var firstPlayerCards = Console.ReadLine()
-                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .ToArray();
+            InitDeck(firstPlayerDeck);
+            InitDeck(secondPlayerDeck);
 
-            var secondPlayerCards = Console.ReadLine()
-                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .ToArray();
+            int turns = 0;
 
-            var firstQueue = new Queue<string>(firstPlayerCards);
-            var secondQueue = new Queue<string>(secondPlayerCards);
-
-            var turns = 0;
-
-            while (true)
+            while (turns < MaxTurns || !gameOver)
             {
-                turns++;
-
-                var firstPlayerCard = firstQueue.Dequeue();
-                var secondPlayerCard = secondQueue.Dequeue();
-
-                var firstPlayerCardNumber = int.Parse(Regex.Match(firstPlayerCard, @"\d+").Value);
-                var secondPlayerCardNumber = int.Parse(Regex.Match(secondPlayerCard, @"\d+").Value);
-
-                if (firstPlayerCardNumber > secondPlayerCardNumber)
+                if (firstPlayerDeck.Count == 0 || secondPlayerDeck.Count == 0)
                 {
-                    firstQueue.Enqueue(firstPlayerCard);
-                    firstQueue.Enqueue(secondPlayerCard);
+                    break;
                 }
-                else if (firstPlayerCardNumber < secondPlayerCardNumber)
+
+                var firstPlayerCard = firstPlayerDeck.Dequeue();
+                var secondPlayerCard = secondPlayerDeck.Dequeue();
+
+                board.Add(firstPlayerCard);
+                board.Add(secondPlayerCard);
+
+                CompareScore(firstPlayerCard.Key, secondPlayerCard.Key);
+
+                turns++;
+            }
+
+            if (firstPlayerDeck.Count == secondPlayerDeck.Count)
+            {
+                Console.WriteLine($"Draw after {turns} turns");
+            }
+            else
+            {
+                Console.WriteLine($"{(firstPlayerDeck.Count > secondPlayerDeck.Count ? "First" : "Second")} player wins after {turns} turns");
+            }
+        }
+
+        private static void InitDeck(Queue<KeyValuePair<int, char>> playerDeck)
+        {
+            var cards = Console.ReadLine()
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var regex = new Regex(@"([0-9]+)(\w)");
+
+            foreach (var card in cards)
+            {
+                var match = regex.Match(card);
+                var number = int.Parse(match.Groups[1].Value);
+                var letter = char.Parse(match.Groups[2].Value);
+
+                playerDeck.Enqueue(new KeyValuePair<int, char>(number, letter));
+            }
+        }
+
+        private static void CompareScore(int firstPlayerScore, int secondPlayerScore)
+        {
+            if (firstPlayerScore > secondPlayerScore)
+            {
+                MoveCardsToWinnerDeck(firstPlayerDeck);
+            }
+            else if (firstPlayerScore < secondPlayerScore)
+            {
+                MoveCardsToWinnerDeck(secondPlayerDeck);
+            }
+            else
+            {
+                if (firstPlayerDeck.Count() < 3 || secondPlayerDeck.Count() < 3)
                 {
-                    secondQueue.Enqueue(secondPlayerCard);
-                    secondQueue.Enqueue(firstPlayerCard);
+                    gameOver = true;
                 }
                 else
                 {
-                    CheckFor3MoreCards(firstQueue, secondQueue);
-                }
-
-                if (GameResult != Result.None)
-                {
-                    break;
-                }
-
-                if (firstQueue.Count == 0)
-                {
-                    GameResult = Result.SecondPlayerWin;
-                    break;
-                }
-
-                if (secondQueue.Count == 0)
-                {
-                    GameResult = Result.FirstPlayerWin;
-                    break;
+                    War();
                 }
             }
-
-            var result = String.Empty;
-
-            switch (GameResult)
-            {
-                case Result.FirstPlayerWin: result = "First player wins"; break;
-                case Result.SecondPlayerWin: result = "Second player wins"; break;
-                case Result.ItsDraw: result = "Draw"; break;
-            }
-
-            Console.WriteLine("{0} after {1} turns", result, turns);
         }
 
-        private static void CheckFor3MoreCards(Queue<string> firstQueue, Queue<string> secondQueue)
+        private static void MoveCardsToWinnerDeck(Queue<KeyValuePair<int, char>> playerDeck)
         {
-            if (firstQueue.Count < 3 && secondQueue.Count < 3)
+            var winnerCards = board
+                .OrderByDescending(x => x.Key)
+                .ThenByDescending(x => x.Value);
+
+            foreach (var card in winnerCards)
             {
-                GameResult = Result.ItsDraw;
-                return;
+                playerDeck.Enqueue(card);
             }
 
-            if (firstQueue.Count < 3)
-            {
-                GameResult = Result.SecondPlayerWin;
-                return;
-            }
+            board.Clear();
+        }
 
-            if (secondQueue.Count < 3)
-            {
-                GameResult = Result.FirstPlayerWin;
-                return;
-            }
-
+        private static void War()
+        {
             var firstPlayerCardsSum = 0;
             var secondPlayerCardsSum = 0;
 
             for (int i = 0; i < 3; i++)
             {
-                firstPlayerCardsSum += GetCardLetterNumber(firstQueue);
-                secondPlayerCardsSum += GetCardLetterNumber(secondQueue);
+                var firstPlayerCard = firstPlayerDeck.Dequeue();
+                var secondPlayerCard = secondPlayerDeck.Dequeue();
+
+                board.Add(firstPlayerCard);
+                board.Add(secondPlayerCard);
+
+                firstPlayerCardsSum += firstPlayerCard.Value - '`';
+                secondPlayerCardsSum += secondPlayerCard.Value - '`';
             }
 
-            if (firstPlayerCardsSum < secondPlayerCardsSum)
-            {
-                SortAddToPlayerAndClearCardsOnField(CardsOnField, secondQueue);
-            }
-            else if (firstPlayerCardsSum > secondPlayerCardsSum)
-            {
-                SortAddToPlayerAndClearCardsOnField(CardsOnField, firstQueue);
-            }
-            else
-            {
-                CheckFor3MoreCards(firstQueue, secondQueue);
-            }
-        }
-
-        private static int GetCardLetterNumber(Queue<string> queue)
-        {
-            var card = queue.Dequeue();
-            CardsOnField.Add(card);
-
-            var letter = card.Last();
-
-            return int.Parse((letter - '`').ToString());
-        }
-
-        private static void SortAddToPlayerAndClearCardsOnField(List<string> cardsOnField, Queue<string> queue)
-        {
-            var sortedCards = cardsOnField
-                .OrderByDescending(x => int.Parse(x.Substring(0, x.Length - 1)))
-                .ThenByDescending(x => x.Last().ToString())
-                .ToList();
-
-            foreach (var card in sortedCards)
-            {
-                queue.Enqueue(card);
-            }
-
-            cardsOnField.Clear();
+            CompareScore(firstPlayerCardsSum, secondPlayerCardsSum);
         }
     }
 }
