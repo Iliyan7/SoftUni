@@ -1,0 +1,104 @@
+@import url('reset.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+html {
+    font: 14px/1.5 'Open Sans', sans-serif;
+}
+
+body {
+    padding: 1% 20% 1% 20%;
+}
+
+h1 {
+    font-weight: 900;
+    font-size: 2.4rem;
+    padding: 1rem 0;
+    position: relative;
+    display: inline-block;
+}
+
+h1::after{
+    content: "";
+    position: absolute;
+    width: 70%;
+    left: 0;
+    bottom: 0;
+    border-bottom: 2px solid #1996A9;;
+}
+
+h2 {
+    font-size: 1.6rem;
+    padding: 1rem 0;
+}
+
+p {
+    padding: 2rem 0;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+#services-section {
+    display: flex;
+    justify-content: space-between;
+}
+
+#services-section .service {
+    flex: 0 1 32%;
+    text-align: center;
+    border: 1px solid rgba(211, 211, 211, 0.5)
+}
+
+.s:not(:last-child) {
+    border-bottom: 1px solid rgba(211, 211, 211, 0.5)
+}
+
+.service:nth-child(odd) .h{
+    background: #333333;
+}
+
+.service:nth-child(even) .h {
+    background: #1996A9;
+}
+
+.h {
+    padding: 1.3rem 0;
+}
+
+.price {
+    background: #F6F6F6;
+    font-size: 2rem;
+    font-weight: 500;
+    padding: 1.5rem 0;
+}
+
+.description {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.info,
+.description {
+    padding: 1.2rem 0;
+}
+
+.buy {
+    padding: 2.5rem 0 1rem 0;
+}
+
+#services-section .service h2 {
+    color: white;
+}
+
+#services-section .service .buy button {
+    border: 0;
+    font-size: 1.2rem;
+    background: #008CBA;
+    color:white;
+    border-radius: 3px;
+    padding: 1rem 2rem;
+}
+
+.service-heading:nth-child(2) {
+    background: black;
+}

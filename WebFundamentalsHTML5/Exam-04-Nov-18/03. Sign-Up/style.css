@@ -1,0 +1,138 @@
+@import url('reset.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url("https://use.fontawesome.com/releases/v5.5.0/css/all.css");
+
+html {
+    font: normal 14px/1.5 'Open Sans';
+    box-sizing: border-box;
+}
+
+* {
+     box-sizing: inherit;
+}
+
+body {
+    background: #E9E9E9;
+    padding: 10% 24%;
+}
+
+main {
+    display: flex;
+    height: 450px;
+    box-shadow: 1px 2px 10px 0px rgba(97,97,97,1);
+}
+
+main .cover {
+    flex: 0 0 50%;
+    background-image: 
+        linear-gradient(
+        rgba(0, 0, 0, 0.75), 
+        rgba(0, 0, 0, 0.75)
+        ),
+        url("/images/cover.jpg");
+    background-repeat: no-repeat;
+    background-size: 200% auto;
+    background-position: 50%;
+    color: white;
+    position: relative;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 0.8rem;
+    padding: 2rem 1.5rem;
+}
+
+.header {
+    text-align: center;
+    margin: 30% 0 0 0;;
+
+}
+
+.header h2 {
+    font-size: 1.7rem;
+    padding: 0.5rem 0;
+}
+
+.header p {
+    font-size: 1.3rem;
+    padding: 0.5rem 0;
+}
+
+.contacts {
+    position: absolute;
+    bottom: 5%;
+    left: calc(50% - 1rem * 3);
+}
+
+.contacts i{
+    padding: 0 0.5rem;
+}
+
+main .form {
+    flex: 0 0 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+form label, form input {
+    display: block;
+    width: 80%;
+    padding: 0.5rem 0;
+    margin: 0 auto;
+}
+
+form label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(197,197,197,0.7);
+    padding-top: 1rem;
+}
+
+form label:first-child {
+    padding-top:0;
+}
+
+form input {
+    border: 0;
+    border-bottom: 1px solid rgba(197,197,197,0.7);
+}
+
+form input::placeholder {
+    font-family: 'Open Sans';
+    padding-left: 5px;
+    font-size: 1.1rem;
+    color: rgba(147,147,147,1);
+}
+
+form input:focus::-webkit-input-placeholder {
+    opacity: 0;
+}
+
+form input:focus {
+    outline: none;
+}
+
+form div.submit {
+    padding-top: 3rem;
+    width: 80%;
+    margin: 0 auto;
+}
+
+form button {
+    border: 0;
+    border-radius: 20px;
+    padding: 1rem 4rem;
+    background: #111111;
+    color: white;
+    font: inherit;
+}
+
+form a {
+    margin-left: 1rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: grey;
+}

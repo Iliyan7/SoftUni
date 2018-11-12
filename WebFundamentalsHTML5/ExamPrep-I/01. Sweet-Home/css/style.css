@@ -1,0 +1,61 @@
+@import url("reset.css");
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+html {
+    font: normal 14px/1.5 'Open Sans', sans-serif;
+    box-sizing: border-box; 
+}
+
+*, *:before, *:after {
+  box-sizing: inherit; 
+}
+
+body {
+    padding: 2rem 18vw 2rem 18vw
+}
+
+h1, h2 {
+    font-size: 2.5rem;
+    letter-spacing: 3px;
+    padding: 1rem 0 1rem 0;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.main {
+    flex: 0 0 60%;
+}
+
+.gallery {
+    flex: 0 1 calc(40% - 2rem);
+}
+
+.text-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+p.p-text {
+    flex: 0 1 calc(50% - 12px);
+    margin: 0;
+    line-height: 1.3;
+}
+
+div.header {
+    border-left: 2px solid #666;
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+div.header p{
+    color: #555;
+    padding: 1rem 0 1rem 0;
+}
+
+img {
+    width: 300px;
+    height: 180px;
+}

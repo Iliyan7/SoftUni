@@ -1,0 +1,134 @@
+@import url('');
+@import url("https://use.fontawesome.com/releases/v5.5.0/css/all.css");
+
+html {
+    font: normal 14px/1.5 'Helvetica', 'sans-serif';
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+}
+
+header.logo {
+    display: inline-block;
+    width: 45%;
+    font-size: 1.8rem;
+    font-weight: 500;
+    padding: 3rem 0rem 3rem 12rem;
+}
+
+header.logo span {
+    color: #34b1c4
+}
+
+nav {
+    display: inline-block;
+    width: 54%;
+    padding: 3rem 0 3rem 0;
+}
+
+ul {
+    width: 80%;
+    display: flex;
+    justify-content: space-evenly;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul > li {
+    font-size: 1.4rem;
+}
+
+ul > li:first-child {
+    border-bottom: 2px solid #34b1c4; 
+}
+
+section.cover {
+    background-image: url('images/slide2.jpg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    height: 600px;
+    position: relative;
+}
+
+div.get-started {
+    width: 35%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 10%;
+    top: 35%;
+}
+
+div.get-started > p {
+    margin: 0 0 0.5rem 0;
+    font-size: 3rem;
+    color: white;
+}
+
+div.get-started > button {
+    width: 50%;
+    padding: 0.5rem 0;
+    border: 0;
+    border-radius: 20px;
+    background: #008cba;
+    color: white;
+    font-size: 2rem;
+}
+
+section.company {
+    text-align: center;
+}
+
+section.company > h2 {
+    font-size: 2rem;
+}
+
+section.company > p {
+    width: 75%;
+    margin: 1rem auto;
+    font-size: 1.3rem;
+}
+
+section.company > button {
+    background: black;
+    color:white;
+    border: 0;
+    border-radius: 30px;
+    width: 10rem;
+    padding: 0.8rem 0;
+    margin: 1rem 0;
+}
+
+span.underline {
+    padding-bottom: 5px;
+     border-bottom: 3px solid #34b1c4;
+}
+
+footer .subscribe {
+    height: 200px;
+    background: #393f43;
+}
+
+footer .links {
+    height: 300px;
+    background: #262b2f;
+    color:white;
+}
+
+footer .copyright {
+    padding: 1.5rem 0;
+    text-align: center;
+    background: #2f3539;
+    color: white;
+}
+
+footer .copyright > span {
+ color: #34b1c4
+}

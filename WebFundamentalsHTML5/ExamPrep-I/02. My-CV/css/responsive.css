@@ -1,0 +1,93 @@
+/*TODO:*/
+
+@media only screen and (min-width: 768px) and (max-width: 1028px) {
+    aside {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    aside img {
+        display: block;
+        width: 250px;
+        height: 250px;
+        flex: 0 0 auto;
+        margin: 4em 2em 1em 1em;
+        border-radius: 50%;
+        box-shadow: 1px 5px 5px grey;
+    }
+
+    #personal-info {
+        flex: 0 1 250px;
+        padding-top: 4em;
+        padding-left: 2em
+    }
+
+    #skills, #languages {
+        flex: 0 1 100%;
+    }
+
+    .uni-img-container {
+        width: 12%;
+        float: left;
+        background-color: rgba(241, 241, 241, .4);
+    }
+}
+
+@media only screen and (min-width: 1029px) {
+    #main {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    aside, main section {
+        margin: 2%;
+        padding-bottom: 2%;
+    }
+
+    aside {
+        flex: 0 1 22%;
+    }
+
+    aside img {
+        width: 100%;
+        margin: 0;
+    }
+
+    aside article {
+        padding: 0;
+    }
+
+    main {
+        flex: 0 1 65%;
+    }
+
+    hr.hr {
+        display: block;
+    }
+
+    #work,
+    #education {
+        margin-top: 3.2%;
+        padding: 14px 18px;
+        margin-bottom: 0;
+    }
+
+     #education article.school > div {
+        display: flex;
+        align-items: center;
+    }
+
+    .uni-img-container {
+        flex: 0 0 14%;
+        background-color: rgba(241, 241, 241, .4);
+    }
+
+    .school div img {
+        width: 100%;
+        height: auto;
+        margin: 0;
+    }
+}
