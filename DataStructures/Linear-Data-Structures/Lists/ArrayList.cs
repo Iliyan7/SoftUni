@@ -2,22 +2,22 @@
 
 public class ArrayList<T>
 {
-    private const int Initial_Capacity = 2;
+    private const int InitialCapacity = 2;
 
     private T[] items;
 
     public ArrayList()
     {
-        this.items = new T[Initial_Capacity];
+        this.items = new T[InitialCapacity];
     }
 
-    public int Count { get; set; }
+    public int Count { get; private set; }
 
     public T this[int index]
     {
         get
         {
-            if (index > this.Count)
+            if(index >= this.Count)
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -27,7 +27,7 @@ public class ArrayList<T>
 
         set
         {
-            if (index > this.Count)
+            if (index >= this.Count)
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -38,7 +38,7 @@ public class ArrayList<T>
 
     public void Add(T item)
     {
-        if (this.Count == this.items.Length)
+        if(this.Count == this.items.Length)
         {
             this.Resize();
         }
@@ -46,29 +46,29 @@ public class ArrayList<T>
         this.items[this.Count++] = item;
     }
 
-    private void Resize()
-    {
-        Array.Resize<T>(ref this.items, this.items.Length * 2);
-    }
-
     public T RemoveAt(int index)
     {
-        if (index >= this.Count)
+        if(index >= this.Count)
         {
             throw new ArgumentOutOfRangeException();
         }
 
-        var elemnet = this.items[index];
+        var element = this.items[index];
         this.items[index] = default(T);
         this.Shift(index);
         this.Count--;
 
-        if (this.Count < this.items.Length / 4)
+        if(this.Count < this.items.Length / 4)
         {
             this.Shrink();
         }
 
-        return elemnet;
+        return element;
+    }
+
+    private void Resize()
+    {
+        Array.Resize<T>(ref this.items, this.items.Length * 2);
     }
 
     private void Shift(int index)
